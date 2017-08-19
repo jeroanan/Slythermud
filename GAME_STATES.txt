@@ -1,0 +1,21 @@
+Slythermyud gamestates
+~~~~~~~~~~~~~~~~~~~~~~
+
+Version 0.1 of this document by David Tosslehoff , exceedingly early on
+12/11/2003.
+
+Why have game states? To help decide in which context we're being given data in.
+
+What are the states? Well so far, they are:
+	
+	0 == STATE_NOT_IN_USE == socket isn't in use yet
+	1 == STATE_UNAME == waiting for username from the user
+	2 == STATE_UNAME2 == waiting for confirmation of username from the user.
+	3 == STATE_NEWPASS == waiting for a password on a new character
+	4 == STATE_NEWPASS2 == waiting for confirmation of password on a new character.
+	5 == STATE_GENDER
+	6 == STATE_RACE == Reserved for use later in development.
+	7 == STATE_HOMELAND == Reserved for use later in development.
+	8 == STATE_CLASS == Reserved for use later in development.
+
+Note that every user does not necessarily go into each state every time they log in. For example, state 2 is only encountered when creating a new character.
