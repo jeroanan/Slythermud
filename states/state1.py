@@ -16,9 +16,9 @@ class State1(object):
 
         for i, bLines in enumerate(banner.split('\n')):
             if i < len(bLines) - 1:
-                self.__sInfo.sendString(bLines)
+                self.__sInfo.send_string(bLines)
             else:
-                self.__sInfo.sendString(bLines, 0)			
+                self.__sInfo.send_string(bLines, False)			
 
     def process_input(self, data):
         pass

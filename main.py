@@ -14,12 +14,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+import select
 import sys
 import socket
 import string        
 import config
 import sckInfo
-import slurpFile
 import states.state1 as state1
 
 class Slyther(object):
@@ -31,6 +31,12 @@ class Slyther(object):
 
     def start(self):
         try:
+            self.__mud_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.__mud_socket.setblocking(0)
+            self.__mud_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            self.__mud_socket.bind((self.__cfg.listen_address, self.__cfg.listen_port))
+            self.__mud_socket.listen(5)
+
             self.__main_loop()
         except KeyboardInterrupt:
             sys.exit(0)
@@ -45,48 +51,25 @@ class Slyther(object):
             self.__mud_socket.shutdown(2)
             self.__mud_socket.close()
 
-
-    def __entered_state(self, stateNumber, sInfo):
-        """Called when a new game_state is entered into,
-        stateNumber = new game_state, sInfo is the
-        sckInfo object pertaining to that player."""
-        
-        if stateNumber == 1:
-            sInfo.game_state = state1.State1(sInfo, self.__cfg)
-    
-    def __interpret_comm(self, dat, sInfo):
-        dat = dat.strip("\n")
-        dat = dat.strip("\r")
-        
-        sInfo.game_state.process_input(dat)
-    
     def __main_loop(self):
-        
-        self.__mud_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.__mud_socket.setblocking(0)
-        self.__mud_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.__mud_socket.bind((self.__cfg.listen_address, self.__cfg.listen_port))
-        self.__mud_socket.listen(5)
-        self.__socks.append(sckInfo.sckInfo())
-    
-        #main game loop starts here...
-        while 1==1:
+
+        while True:
                     
-            try:
-                current_socket = self.__socks[len(self.__socks)-1]
-                current_socket.sck, current_socket.addr = self.__mud_socket.accept()
-                self.__entered_state(1, current_socket)
-                self.__socks.append(sckInfo.sckInfo())
-                                        
-            except socket.error:
-                pass        
+            r, w, e = select.select([self.__mud_socket], [], [], 0)
+            
+            if self.__mud_socket in r:
+
+                sck = sckInfo.sckInfo()
+                sck.sck, sck.addr = self.__mud_socket.accept()
+                sck.game_state = state1.State1(sck, self.__cfg)
+                self.__socks.append(sck)
     
             for sck in self.__socks:                    
-                lineIn = sck.recvString()
+                lineIn = sck.recv_string()
     
                 if lineIn=="": continue
     
-                self.__interpret_comm(lineIn, sck)
+                sck.game_state.process_input(lineIn.strip("\n").strip("\r"))
 
 if __name__=="__main__":
     s = Slyther()

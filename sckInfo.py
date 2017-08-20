@@ -25,7 +25,7 @@ class sckInfo:
     __game_state = None
     username = ""
     recvq = ""    
-    isSock = 0
+    is_sock = False
 
     @property
     def game_state(self):
@@ -36,29 +36,31 @@ class sckInfo:
         self.__game_state = val
         self.__game_state.enter()
 
-    def sendString(self, dat, crlf=1):
-        if crlf == 1:
+    def send_string(self, dat, crlf=True):
+        if crlf:
             self.sck.send((dat+"\r\n").encode())
         else:
             self.sck.send(dat.encode())
 
-    def recvString(self):
+    def recv_string(self):
         
         if os.name == "posix":
             x, y, z = select.select([self.sck], [], [], 0)
 
             if self.sck in x:
-                self.isSock = 1
+                self.is_sock = True
 
-        else: #windows is incredibly silly about using select.select() <tosslehoff 11/03>
+        else: 
             type(socket.socket(socket.AF_INET, socket.SOCK_STREAM))
             if type(self.sck)==socket.SocketType:
-                 self.isSock = 1
+                 self.is_sock = True
                 
-        if self.isSock == 1:
+        if self.is_sock:
             try:                                
-                self.recvq += self.sck.recv(1024).decode('UTF-8')
+                self.recvq += self.sck.recv(1024).decode()
             
+            except UnicodeDecodeError:
+                pass
             except socket.error:
                 pass
 
