@@ -20,42 +20,59 @@ import string
 import os
 
 class sckInfo:
-	sck = 0
-	addr = 0
-	game_state = 0
-	username = ""
-	recvq = ""	
-	isSock = 0
+    sck = 0
+    addr = 0
+    __game_state = None
+    username = ""
+    recvq = ""    
+    isSock = 0
 
-	def sendString(self, dat, crlf=1):
-		if crlf == 1:
-			self.sck.send((dat+"\r\n").encode())
-		else:
-			self.sck.send(dat.encode())
+    @property
+    def game_state(self):
+        return self.__game_state
 
-	def recvString(self):
-		
-		if os.name == "posix":
-			x, y, z = select.select([self.sck], [], [], 0)
+    @game_state.setter
+    def game_state(self, val):
+        self.__game_state = val
+        self.__game_state.enter()
 
-			if self.sck in x:
-				self.isSock == 1
-		else: #windows is incredibly silly about using select.select() <tosslehoff 11/03>
-			type(socket.socket(socket.AF_INET, socket.SOCK_STREAM))
-			if type(self.sck)==socket.SocketType:
-                                self.isSock = 1
-				
-		if self.isSock == 1:
-	               	try:                                
-                            self.recvq += self.sck.recv(1024)
-			
-               		except socket.error:
-                		pass
+    def sendString(self, dat, crlf=1):
+        if crlf == 1:
+            self.sck.send((dat+"\r\n").encode())
+        else:
+            self.sck.send(dat.encode())
 
-		if self.recvq.find("\n") != -1:
-			self.sckLines = self.recvq.split("\n")
-			self.recvq = self.recvq.lstrip(self.sckLines[0]+"\n")
-			return self.sckLines[0]
-		
-		return -1
+    def recvString(self):
+        
+        if os.name == "posix":
+            x, y, z = select.select([self.sck], [], [], 0)
+
+            if self.sck in x:
+                self.isSock = 1
+
+        else: #windows is incredibly silly about using select.select() <tosslehoff 11/03>
+            type(socket.socket(socket.AF_INET, socket.SOCK_STREAM))
+            if type(self.sck)==socket.SocketType:
+                 self.isSock = 1
+                
+        if self.isSock == 1:
+            try:                                
+                self.recvq += self.sck.recv(1024).decode('UTF-8')
+            
+            except socket.error:
+                pass
+
+            if self.recvq.find("\n") != -1:
+                self.sckLines = self.recvq.split("\n")
+                self.recvq = self.recvq.lstrip(self.sckLines[0]+"\n")
+                return self.sckLines[0]
+                
+        return ""
+
+    def close(self):
+        try:
+            self.sck.shutdown(2)
+            self.sck.close()
+        except:
+            pass
 

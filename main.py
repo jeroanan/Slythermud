@@ -14,133 +14,80 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-
-# Settings:
-
-# Listen on which address for connections? Leave this one blank to listen on any
-# address:
-listen_address = ''
-
-# Port to listen on for incoming mud connections:
-listen_port = 3000
-
-# which directory are your text files (motd, etc) located in?
-text_dir = "text"
-
-# what should your playerfile (p-file) be called?
-pfile = "pfile.slythermud"
-
-# -- End of settings -- #
-
 import sys
 import socket
-import string		
+import string        
+import config
 import sckInfo
 import slurpFile
+import states.state1 as state1
 
-socks = []
-banner = slurpFile.slurpFile()
+class Slyther(object):
 
-def startUp():
-	global banner
-	banner.fileName = text_dir+"/banner"
-	banner.readFile()
-		
-def enteredState(stateNumber, sInfo):
-	# Called when a new game_state is entered into,
-	# stateNumber = new game_state, sInfo is the
-	# sckInfo object pertaining to that player.
-	if stateNumber == 1:
-		#waiting for username. Therefore, we've just connected.		
-		bannerMsg = banner.fileContent.split("\n")
-		
-		i = 0
-		for bLines in bannerMsg:
-			i+= 1
-			if i < len(bLines) - 1:
-				sInfo.sendString(bLines)
-			else:
-				sInfo.sendString(bLines, 0)			
+    def __init__(self):
+        self.__cfg = config.Config()
+        self.__socks = []
+        self.__mud_socket = None
 
-	elif stateNumber == 2:
-		sInfo.sendString("\nAre you sure you wish to be known as "+sInfo.userName+"? (y/n) ", 0)
-	elif stateNumber == 3:
-		sInfo.sendString("\nA password/phrase is needed for your new character.")
-		sInfo.sendString("Please follow all the usual steps for a secure password")
-		sInfo.sendString("Please type your password: ", 0)
-	elif stateNumber == 4:
-		sInfo.sendString("\nPlease confirm your password: ", 0)
-	elif stateNumber == 5:
-		sInfo.sendString("\nWhat is your sex? (m/f): ", 0)
-	elif stateNumber == 6:
-		#stateNumbers 6, 7 and 8 are reserved for when their
-		#respective features are implemented and should not
-		#be used unless you fancy fux0ring the code up :)...
-		pass
-	elif stateNumber == 7:
-		pass
-	elif stateNumber == 8:
-		pass
+    def start(self):
+        try:
+            self.__main_loop()
+        except KeyboardInterrupt:
+            sys.exit(0)
+            self.__shutdown()
+        except:
+            self.__shutdown()
+            raise
 
-def interpretComm(dat, sInfo):
-	dat = dat.strip("\n")
-	dat = dat.strip("\r")
-	
-	if sInfo.game_state == 1:
-		#TODO: is name valid?
-		#TODO: is name already taken?
-		#TODO: switch state accordingly.
-                pass
-	elif sInfo.game_state == 2:
-		if dat == "y":
-			sInfo.game_state == 3
-			enteredState(3, sInfo)
-		else: #Nope, user is being indecisive :p
-			sInfo.game_state == 1
-			enteredState(1, sInfo)
-	
-	elif sInfo.game_state == 3:
-		#TODO: encrypt dat, store dat.
-                pass
-	elif sInfo.game_state == 4:
-		#TODO: encrypt dat, compare dat, change state accordingly.
-                pass
-	elif sInfo.game_state == 5:
-		#TODO: get sex, change state.
-                pass
+    def __shutdown(self):
+        for sck in self.__socks:
+            sck.close()
+            self.__mud_socket.shutdown(2)
+            self.__mud_socket.close()
 
-def mainLoop():
-	global socks
-	
-	mud_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	mud_socket.setblocking(0)
-	mud_socket.bind((listen_address, listen_port))
-	mud_socket.listen(5)
-	socks.append(sckInfo.sckInfo())
 
-	#main game loop starts here...
-	while 1==1:
-				
-		try:
-			socks[len(socks)-1].sck, socks[len(socks)-1].addr = mud_socket.accept()
-			socks[len(socks)-1].game_state = 1
-			enteredState(1, socks[len(socks)-1])
-			socks.append(sckInfo.sckInfo())
-									
-		except socket.error:
-			pass		
+    def __entered_state(self, stateNumber, sInfo):
+        """Called when a new game_state is entered into,
+        stateNumber = new game_state, sInfo is the
+        sckInfo object pertaining to that player."""
+        
+        if stateNumber == 1:
+            sInfo.game_state = state1.State1(sInfo, self.__cfg)
+    
+    def __interpret_comm(self, dat, sInfo):
+        dat = dat.strip("\n")
+        dat = dat.strip("\r")
+        
+        sInfo.game_state.process_input(dat)
+    
+    def __main_loop(self):
+        
+        self.__mud_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.__mud_socket.setblocking(0)
+        self.__mud_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.__mud_socket.bind((self.__cfg.listen_address, self.__cfg.listen_port))
+        self.__mud_socket.listen(5)
+        self.__socks.append(sckInfo.sckInfo())
+    
+        #main game loop starts here...
+        while 1==1:
+                    
+            try:
+                current_socket = self.__socks[len(self.__socks)-1]
+                current_socket.sck, current_socket.addr = self.__mud_socket.accept()
+                self.__entered_state(1, current_socket)
+                self.__socks.append(sckInfo.sckInfo())
+                                        
+            except socket.error:
+                pass        
+    
+            for sck in self.__socks:                    
+                lineIn = sck.recvString()
+    
+                if lineIn=="": continue
+    
+                self.__interpret_comm(lineIn, sck)
 
-		i=0
-			
-		for sck in socks:					
-			
-			lineIn = socks[i].recvString()
-
-			if lineIn != -1:
-				#TODO: Something with this you jack-ass!
-                                print(lineIn)
-				
-			i+=1		
-
-startUp()
-mainLoop()
+if __name__=="__main__":
+    s = Slyther()
+    s.start()
