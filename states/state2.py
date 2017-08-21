@@ -8,8 +8,7 @@ class State2(state.State):
 
     def process_input(self, data):
         if data[0].upper() == "Y":
-            # Get password
-            pass
+            self.sInfo.change_state(self.config, 3)
         elif data[0].upper() == "N":
             self.sInfo.change_state(self.config, 1)
         else:

@@ -67,11 +67,11 @@ class Slyther(object):
                 self.__socks.append(sck)
     
             for sck in self.__socks:                    
-                lineIn = sck.recv_string()
+                lineIn = sck.recv_string().strip("\n").strip("\r")
     
                 if lineIn=="": continue
     
-                sck.game_state.process_input(lineIn.strip("\n").strip("\r"))
+                sck.game_state.process_input(lineIn)
 
 if __name__=="__main__":
     s = Slyther()

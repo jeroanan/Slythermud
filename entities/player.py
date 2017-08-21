@@ -1,3 +1,4 @@
+import bcrypt
 import sqlite3
 
 class Player(object):
@@ -20,7 +21,10 @@ class Player(object):
 
     @password.setter
     def password(self, val):
-        self.__password = val
+        self.__password = bcrypt.hashpw(val.encode(), bcrypt.gensalt())
+
+    def verify_password(self, password):
+        return bcrypt.hashpw(password.encode(), self.password)==self.password
 
     @classmethod
     def load_by_name(self, config, name):
