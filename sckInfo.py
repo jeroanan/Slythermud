@@ -19,13 +19,17 @@ import select
 import string
 import os
 
+import states.statefactory as statefactory
+
 class sckInfo:
     sck = 0
     addr = 0
-    __game_state = None
     username = ""
     recvq = ""    
     is_sock = False
+
+    __game_state = None
+    __player = None
 
     @property
     def game_state(self):
@@ -36,11 +40,22 @@ class sckInfo:
         self.__game_state = val
         self.__game_state.enter()
 
+    @property
+    def player(self):
+        return self.__player
+
+    @player.setter
+    def player(self, val):
+        self.__player = val
+    
     def send_string(self, dat, crlf=True):
         if crlf:
             self.sck.send((dat+"\r\n").encode())
         else:
             self.sck.send(dat.encode())
+
+    def change_state(self, config, state_number):
+        self.game_state = statefactory.StateFactory.Create(self, config, state_number)
 
     def recv_string(self):
         

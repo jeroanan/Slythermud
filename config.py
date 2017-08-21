@@ -9,7 +9,7 @@ class Config(object):
 	# which directory are your text files (motd, etc) located in?
 	text_dir = "text"
 	
-	# what should your playerfile (p-file) be called?
-	pfile = "pfile.slythermud"
+	database_file = "slythermud.db"
+	
 	
 

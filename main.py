@@ -17,10 +17,10 @@
 import select
 import sys
 import socket
-import string        
+
 import config
+import database.build as build
 import sckInfo
-import states.state1 as state1
 
 class Slyther(object):
 
@@ -31,6 +31,8 @@ class Slyther(object):
 
     def start(self):
         try:
+            build.Build(self.__cfg).build()
+
             self.__mud_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.__mud_socket.setblocking(0)
             self.__mud_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -61,7 +63,7 @@ class Slyther(object):
 
                 sck = sckInfo.sckInfo()
                 sck.sck, sck.addr = self.__mud_socket.accept()
-                sck.game_state = state1.State1(sck, self.__cfg)
+                sck.change_state(self.__cfg, 1)
                 self.__socks.append(sck)
     
             for sck in self.__socks:                    
