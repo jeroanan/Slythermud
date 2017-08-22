@@ -1,6 +1,7 @@
 import states.state as state
 
 class State3(state.State):
+    """State 3: ask the new player for a password"""
 
     def enter(self):
         msg = "Enter a password:"

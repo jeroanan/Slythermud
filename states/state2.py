@@ -1,6 +1,9 @@
 import states.state as state
 
 class State2(state.State):
+    """State 2: Confirm with the new player that they have chosen the name they want.
+                If it is, advance to state 3. Otherwise it's back to state 1.
+    """
 
     def enter(self):
         msg = "Are you sure you want to be known as {} [Y/N]?".format(self.sInfo.player.name)

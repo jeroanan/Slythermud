@@ -1,6 +1,10 @@
 import states.state as state
 
 class State5(state.State):
+    """State 5: Ask the user for their gender
+                When this state has reached is conclusion
+                at this point we save the new player and enter
+                the game"""
 
     def enter(self):
         msg = "Select Gender [M/F]:"
