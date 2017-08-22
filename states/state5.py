@@ -16,7 +16,6 @@ class State5(state.State):
         if gender in ['M', 'F']:
             self.sInfo.player.gender = gender
             self.sInfo.player.save(self.config)
-            self.sInfo.send_string("Player Saved")
         else:
             self.enter()
     

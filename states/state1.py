@@ -31,7 +31,7 @@ class State1(state.State):
             the_player.name = data
             state = 2
         else:
-            print("The player already exists")
+            state = 6
 
         self.sInfo.player = the_player
         self.sInfo.change_state(self.config, state)
