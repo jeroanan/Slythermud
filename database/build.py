@@ -18,7 +18,7 @@ class Build(object):
     def __create_player_table(self, conn):
         if self.__table_exists(conn, "Player"): return
 
-        sql = "CREATE TABLE Player (Name TEXT PRIMARY KEY, Password TEXT)"
+        sql = "CREATE TABLE Player (Name TEXT PRIMARY KEY, Password TEXT, Gender TEXT)"
         cur = conn.cursor()
         cur.execute(sql)
         cur.close()
