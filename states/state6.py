@@ -14,4 +14,3 @@ class State6(state.State):
         else:
             self.enter() # not good long-term.
 
-

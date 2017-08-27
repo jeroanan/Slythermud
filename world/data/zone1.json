@@ -1,0 +1,16 @@
+{
+"id": 1,
+"name": "Example Zone",
+"description": "Welcome to the example zone",
+"rooms": [
+		{
+		"id": 1,
+		"name": "The beginning of the world",
+		"description": "It's the beginning of the world"
+		},
+		{
+		"id": 2,
+		"name": "The next room",
+		"description": "Hellow from the next room"
+		}
+]}

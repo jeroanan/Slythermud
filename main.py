@@ -19,8 +19,9 @@ import sys
 import socket
 
 import config
-import database.build as build
+import database.build as db_build
 import sckInfo
+import world.build as world_build
 
 class Slyther(object):
 
@@ -28,10 +29,12 @@ class Slyther(object):
         self.__cfg = config.Config()
         self.__socks = []
         self.__mud_socket = None
+        self.__world = None
 
     def start(self):
         try:
-            build.Build(self.__cfg).build()
+            db_build.Build(self.__cfg).build()
+            self.__world = world_build.Build.build()
 
             self.__mud_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.__mud_socket.setblocking(0)
