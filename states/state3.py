@@ -9,5 +9,5 @@ class State3(state.State):
 
     def process_input(self, data):
         self.sInfo.player.password = data
-        self.sInfo.change_state(self.config, 4)
+        self.change_state(4)
 

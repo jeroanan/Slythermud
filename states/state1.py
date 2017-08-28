@@ -34,6 +34,6 @@ class State1(state.State):
             state = 6
 
         self.sInfo.player = the_player
-        self.sInfo.change_state(self.config, state)
+        self.change_state(state)
 
         

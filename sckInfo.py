@@ -54,8 +54,8 @@ class sckInfo:
         else:
             self.sck.send(dat.encode())
 
-    def change_state(self, config, state_number):
-        self.game_state = statefactory.StateFactory.Create(self, config, state_number)
+    def change_state(self, config, world, state_number):
+        self.game_state = statefactory.StateFactory.Create(self, config, world, state_number)
 
     def recv_string(self):
         

@@ -9,7 +9,7 @@ class State4(state.State):
 
     def process_input(self, data):
         if self.sInfo.player.verify_password(data):
-            self.sInfo.change_state(self.config, 5)
+            self.change_state(5)
         else:
             self.sInfo.send_string("Passwords do not match")
-            self.sInfo.change_state(self.config, 3)
+            self.change_state(3)

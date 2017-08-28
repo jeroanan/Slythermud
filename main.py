@@ -66,7 +66,7 @@ class Slyther(object):
 
                 sck = sckInfo.sckInfo()
                 sck.sck, sck.addr = self.__mud_socket.accept()
-                sck.change_state(self.__cfg, 1)
+                sck.change_state(self.__cfg, self.__world, 1)
                 self.__socks.append(sck)
     
             for sck in self.__socks:                    

@@ -11,8 +11,8 @@ class State2(state.State):
 
     def process_input(self, data):
         if data[0].upper() == "Y":
-            self.sInfo.change_state(self.config, 3)
+            self.change_state(3)
         elif data[0].upper() == "N":
-            self.sInfo.change_state(self.config, 1)
+            self.change_state(1)
         else:
             self.enter()

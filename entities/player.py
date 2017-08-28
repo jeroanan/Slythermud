@@ -1,5 +1,7 @@
 import bcrypt
-import sqlite3
+
+import database.dbcommand as dbcommand
+import entities.playerstatus as playerstatus
 
 class Player(object):
     
@@ -7,6 +9,7 @@ class Player(object):
         self.__name = ""
         self.__password = ""
         self.__gender = ""
+        self.__status = None
 
     @property
     def name(self):
@@ -35,6 +38,14 @@ class Player(object):
     def gender(self, val):
         self.__gender = val
 
+    @property
+    def status(self):
+        return self.__status
+
+    @status.setter
+    def status(self, val):
+        self.__status = val
+
     def verify_password(self, password):
         return bcrypt.hashpw(password.encode(), self.password)==self.password
 
@@ -48,39 +59,26 @@ class Player(object):
         else:
             sql = "INSERT INTO Player (Name, Password, Gender) VALUES (?, ?, ?)"
             params = (self.name, self.password, self.gender)
-            Player.param_exec(config, sql, params)
+            dbcommand.param_exec(config, sql, params)
+
+        if self.status is not None: self.status.save(config)
 
     @classmethod
     def load_by_name(cls, config, name):
+        """
+        Load a player record given the player's name. Also load the player's
+        current status.
+        """
 
         the_player = None
 
-        conn = sqlite3.connect(config.database_file)
-        cur = conn.cursor()
-
         sql = "SELECT Name, Password, Gender FROM Player WHERE Name=?"
 
-        cur.execute(sql, (name,))
-
-        result = cur.fetchone()
+        result = dbcommand.param_fetch_one(config, sql, (name,))
 
         if result is not None:
             the_player = Player()
             the_player.name, the_player.password, the_player.gender = result
-
-        cur.close()
-        conn.close()
+            the_player.status = playerstatus.PlayerStatus.load_by_name(config, name)
 
         return the_player
-
-    @classmethod
-    def param_exec(cls, config, sql, params):
-        conn = sqlite3.connect(config.database_file)
-        cur = conn.cursor()
-
-        cur.execute(sql, params)
-
-        conn.commit()
-
-        cur.close()
-        conn.close()
