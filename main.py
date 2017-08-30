@@ -34,7 +34,7 @@ class Slyther(object):
     def start(self):
         try:
             db_build.Build(self.__cfg).build()
-            self.__world = world_build.Build.build()
+            self.__world = world_build.build()
 
             self.__mud_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.__mud_socket.setblocking(0)

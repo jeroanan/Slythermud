@@ -7,11 +7,48 @@
 		"id": 1,
 		"name": "The Beginning of the World",
 		"description": "It's the beginning of the world",
-		"exit_south": ".,2"
+		"exit_north": ".,2",
+		"exit_east": ".,3",
+		"exit_south": ".,4",
+		"exit_west": ".,5",
+		"exit_up": ".,6",
+		"exit_down": ".,7"
 		},
 		{
 		"id": 2,
+		"name": "The North Room",
+		"description": "Hello from the North Room",
+		"exit_south": ".,1"
+		},
+		{
+		"id": 3,
+		"name": "The East Room",
+		"description": "Hello from the East Room",
+		"exit_west": ".,1"
+		},
+		{
+		"id": 4,
 		"name": "The South Room",
-		"description": "Hellow from the south room"
+		"description": "Hello from the South Room",
+		"exit_north": ".,1"
+		},
+		{
+		"id": 5,
+		"name": "The West Room",
+		"description": "Hello from the West Room",
+		"exit_east": ".,1"
+		},
+		{
+		"id": 6,
+		"name": "The Top Room",
+		"description": "Hello from the Top Room",
+		"exit_down": ".,1"
+		},
+		{
+		"id": 7,
+		"name": "The Bottom Room",
+		"description": "Hello from the Bottom Room",
+		"exit_up": ".,1"
 		}
+
 ]}

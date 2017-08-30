@@ -1,3 +1,7 @@
+import inspect
+
+import entities.room as room
+
 class Zone(object):
 
     def __init__(self):
@@ -37,3 +41,17 @@ class Zone(object):
     @rooms.setter
     def rooms(self, val):
         self.__rooms = val
+
+    @classmethod
+    def from_dict(cls, the_dict):
+        z = Zone()
+
+        propnames = [name for (name,value) in inspect.getmembers(Zone, lambda x: isinstance(x, property))]
+
+        for p in propnames:
+            if p!="rooms": setattr(z, p, the_dict.get(p, ""))
+            
+        for r in the_dict["rooms"]:
+            z.rooms.append(room.Room.from_dict(r))
+    
+        return z

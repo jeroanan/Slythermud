@@ -1,9 +1,17 @@
+import inspect
+
 class Room(object):
 
     def __init__(self):
         self.__id = "-1"
         self.__name = ""
         self.__description = ""
+        self.__exit_north = ""
+        self.__exit_east = ""
+        self.__exit_south = ""
+        self.__exit_west = ""
+        self.__exit_up = ""
+        self.__exit_down = ""
 
     @property
     def id(self):
@@ -28,3 +36,64 @@ class Room(object):
     @description.setter
     def description(self, val):
         self.__description = val
+
+    @property
+    def exit_north(self):
+        return self.__exit_north
+
+    @exit_north.setter
+    def exit_north(self, val):
+        self.__exit_north = val
+
+    @property
+    def exit_east(self):
+        return self.__exit_east
+
+    @exit_east.setter
+    def exit_east(self, val):
+        self.__exit_east = val
+
+    @property
+    def exit_south(self):
+        return self.__exit_south
+
+    @exit_south.setter
+    def exit_south(self, val):
+        self.__exit_south = val
+
+    @property
+    def exit_west(self):
+        return self.__exit_west
+
+    @exit_west.setter
+    def exit_west(self, val):
+        self.__exit_west = val
+
+    @property
+    def exit_up(self):
+        return self.__exit_up
+
+    @exit_up.setter
+    def exit_up(self, val):
+        self.__exit_up = val
+
+    @property
+    def exit_down(self):
+        return self.__exit_down
+
+    @exit_down.setter
+    def exit_down(self, val):
+        self.__exit_down = val
+
+    @classmethod
+    def from_dict(cls, the_dict):
+
+        r = Room()
+        
+        propnames = [name for (name,value) in inspect.getmembers(Room, lambda x: isinstance(x, property))]
+
+        for p in propnames:
+            setattr(r, p, the_dict.get(p, ""))
+            
+        return r
+

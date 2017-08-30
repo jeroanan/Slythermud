@@ -11,11 +11,11 @@ class State10(state.State):
 
     def __enter_room(self, zone, room):
 
-        def f(l, v):
+        def find_in_list(l, v):
             return [r for r in l if r.id==v][0]
 
-        zone = f(self.world, zone)
-        room = f(zone.rooms, room)
+        zone = find_in_list(self.world, zone)
+        room = find_in_list(zone.rooms, room)
 
         self.sInfo.send_string(room.name)
         self.sInfo.send_string(room.description)
