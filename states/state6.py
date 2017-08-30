@@ -10,7 +10,7 @@ class State6(state.State):
     def process_input(self, data):
         if self.sInfo.player.verify_password(data):
             # Password is valid. Enter game.
-            pass
+            self.change_state(10)
         else:
             self.enter() # not good long-term.
 

@@ -5,12 +5,13 @@
 "rooms": [
 		{
 		"id": 1,
-		"name": "The beginning of the world",
-		"description": "It's the beginning of the world"
+		"name": "The Beginning of the World",
+		"description": "It's the beginning of the world",
+		"exit_south": ".,2"
 		},
 		{
 		"id": 2,
-		"name": "The next room",
-		"description": "Hellow from the next room"
+		"name": "The South Room",
+		"description": "Hellow from the south room"
 		}
 ]}
