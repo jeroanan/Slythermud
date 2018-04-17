@@ -42,6 +42,9 @@ class Zone(object):
     def rooms(self, val):
         self.__rooms = val
 
+    def room_by_id(self, room_id):
+        pass
+
     @classmethod
     def from_dict(cls, the_dict):
         z = Zone()

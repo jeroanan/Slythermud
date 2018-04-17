@@ -1,4 +1,4 @@
-# Copyright (c) 2003,2017 the SlytherMUD development team.
+# Copyright (c) 2003,2017,2018 the SlytherMUD development team.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -14,6 +14,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+import logging
 import socket
 import select
 import string
@@ -22,14 +23,21 @@ import os
 import states.statefactory as statefactory
 
 class sckInfo:
-    sck = 0
-    addr = 0
-    username = ""
-    recvq = ""    
-    is_sock = False
 
-    __game_state = None
-    __player = None
+
+    def __init__(self):
+        self.sck = 0
+        self.addr = 0
+        self.username = ""
+        self.recvq = ""    
+        self.is_sock = False
+        self.closed = False
+
+        self.__game_state = None
+        self.__player = None
+
+        self.__logger = logging.getLogger('sckInfo')
+        logging.basicConfig(level=logging.INFO)
 
     @property
     def game_state(self):
@@ -58,6 +66,7 @@ class sckInfo:
         self.game_state = statefactory.StateFactory.Create(self, config, world, state_number)
 
     def recv_string(self):
+        if self.closed: return ""
         
         if os.name == "posix":
             x, y, z = select.select([self.sck], [], [], 0)
@@ -72,7 +81,9 @@ class sckInfo:
                 
         if self.is_sock:
             try:                                
-                self.recvq += self.sck.recv(1024).decode()
+                data = self.sck.recv(1024).decode()
+                if not data: self.close()
+                self.recvq += data
             
             except UnicodeDecodeError:
                 pass
@@ -83,13 +94,15 @@ class sckInfo:
                 self.sckLines = self.recvq.split("\n")
                 self.recvq = self.recvq.lstrip(self.sckLines[0]+"\n")
                 return self.sckLines[0]
-                
+
         return ""
 
     def close(self):
         try:
+            self.__logger.info("Disconnecting {addr}".format(addr=self.addr))
             self.sck.shutdown(2)
             self.sck.close()
+            self.closed = True
         except:
             pass
 

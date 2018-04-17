@@ -1,5 +1,7 @@
 import inspect
 
+import world.direction as direction
+
 class Room(object):
 
     def __init__(self):
@@ -84,6 +86,26 @@ class Room(object):
     @exit_down.setter
     def exit_down(self, val):
         self.__exit_down = val
+
+    def can_exit_dir(self, d):
+        return self.get_exit(d) is not None
+
+    def get_exit(self, d):
+        if d=="": return None
+
+        exits = {"north": self.exit_north,
+                "east": self.exit_east,
+                "south": self.exit_south,
+                "west": self.exit_west}
+        
+        ed = direction.get_direction(d)
+
+        exit_string = exits.get(ed, None)
+
+        if exit_string is None: return exit_string
+        exit_split = exit_string.split(',')
+
+        return (exit_split[0], exit_split[1])
 
     @classmethod
     def from_dict(cls, the_dict):

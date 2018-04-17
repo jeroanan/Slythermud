@@ -1,4 +1,4 @@
-# Copyright (c) 2003,2017 the SlytherMUD development team.
+# Copyright (c) 2003,2017,2018 the SlytherMUD development team.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -17,6 +17,7 @@
 import select
 import sys
 import socket
+import logging
 
 import config
 import database.build as db_build
@@ -30,6 +31,9 @@ class Slyther(object):
         self.__socks = []
         self.__mud_socket = None
         self.__world = None
+        self.__logger = logging.getLogger('Slyther')
+
+        logging.basicConfig(level=logging.INFO)
 
     def start(self):
         try:
@@ -41,6 +45,8 @@ class Slyther(object):
             self.__mud_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self.__mud_socket.bind((self.__cfg.listen_address, self.__cfg.listen_port))
             self.__mud_socket.listen(5)
+
+            self.__logger.info('Listening at {address}:{port}'.format(address=self.__cfg.listen_address,port=self.__cfg.listen_port))
 
             self.__main_loop()
         except KeyboardInterrupt:
@@ -66,10 +72,16 @@ class Slyther(object):
 
                 sck = sckInfo.sckInfo()
                 sck.sck, sck.addr = self.__mud_socket.accept()
+
+                self.__logger.info("New connection from {addr}".format(addr=sck.addr))
                 sck.change_state(self.__cfg, self.__world, 1)
                 self.__socks.append(sck)
     
             for sck in self.__socks:                    
+                if sck.closed:
+                    self.__socks.remove(sck)
+                    next
+
                 lineIn = sck.recv_string().strip("\n").strip("\r")
     
                 if lineIn=="": continue
