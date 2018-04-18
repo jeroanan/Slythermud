@@ -65,5 +65,5 @@ class PlayerStatus(object):
             else:
                 return None
 
-        ps.name, ps.zone, ps.room = result
+        if result is not None: ps.name, ps.zone, ps.room = result
         return ps

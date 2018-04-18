@@ -1,10 +1,18 @@
+import logging 
+
 import states.state as state
 import world.direction as direction
 
 class State10(state.State):
     """State10: main in-game state"""
 
+    def __init__(self, sInfo, config, world):
+        super().__init__(sInfo, config, world)
+        self.__logger = logging.getLogger()
+        logging.basicConfig(level=logging.INFO)
+        
     def enter(self):
+        self.__logger.info('Player {pn} logged in.'.format(pn=self.sInfo.player.name))
         self.__enter_room(self.sInfo.player.status.zone, self.sInfo.player.status.room)
 
     def process_input(self, data):

@@ -14,10 +14,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+import logging
 import select
 import sys
 import socket
-import logging
+import time
 
 import config
 import database.build as db_build
@@ -65,8 +66,9 @@ class Slyther(object):
     def __main_loop(self):
 
         while True:
+            time.sleep(0.1)
                     
-            r, w, e = select.select([self.__mud_socket], [], [], 0)
+            r, _, _ = select.select([self.__mud_socket], [], [], 0)
             
             if self.__mud_socket in r:
 
@@ -87,6 +89,7 @@ class Slyther(object):
                 if lineIn=="": continue
     
                 sck.game_state.process_input(lineIn)
+                
 
 if __name__=="__main__":
     s = Slyther()

@@ -24,9 +24,8 @@ import states.statefactory as statefactory
 
 class sckInfo:
 
-
     def __init__(self):
-        self.sck = 0
+        self.sck = None
         self.addr = 0
         self.username = ""
         self.recvq = ""    
@@ -69,7 +68,7 @@ class sckInfo:
         if self.closed: return ""
         
         if os.name == "posix":
-            x, y, z = select.select([self.sck], [], [], 0)
+            x, _, _ = select.select([self.sck], [], [], 0)
 
             if self.sck in x:
                 self.is_sock = True
@@ -105,4 +104,4 @@ class sckInfo:
             self.closed = True
         except:
             pass
-
+            
