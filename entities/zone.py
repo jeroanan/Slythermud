@@ -58,3 +58,6 @@ class Zone(object):
             z.rooms.append(room.Room.from_dict(r))
     
         return z
+
+    def __str__(self):
+        return 'id: {id}, name={name}, description={description}'.format(id=self.id, name=self.name, description=self.description)

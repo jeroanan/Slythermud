@@ -8,12 +8,12 @@ class Room(object):
         self.__id = "-1"
         self.__name = ""
         self.__description = ""
-        self.__exit_north = ""
-        self.__exit_east = ""
-        self.__exit_south = ""
-        self.__exit_west = ""
-        self.__exit_up = ""
-        self.__exit_down = ""
+        self.__exit_north = None
+        self.__exit_east = None
+        self.__exit_south = None
+        self.__exit_west = None
+        self.__exit_up = None
+        self.__exit_down = None
 
     @property
     def id(self):
@@ -105,6 +105,8 @@ class Room(object):
         if exit_string is None: return exit_string
         exit_split = exit_string.split(',')
 
+        if len(exit_split)<2: return None
+
         return (exit_split[0], exit_split[1])
 
     @classmethod
@@ -118,4 +120,7 @@ class Room(object):
             setattr(r, p, the_dict.get(p, ""))
             
         return r
+
+    def __str__(self):
+        return 'id={id}, name={name}, description={description}'.format(id=self.id, name=self.name, description=self.description)
 
